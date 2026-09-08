@@ -27,11 +27,19 @@ for f in how.md bts.md why.md where.md; do
     rm -f "$HOME/.claude/commands/$f" 2>/dev/null || true
 done
 rm -rf "$HOME/.claude/skills/know-it" "$HOME/.claude/skills/know-how" 2>/dev/null || true
-log_success "Removed Claude Code commands & skills"
+if command -v claude &>/dev/null; then
+    claude plugin uninstall "know-it" 2>/dev/null || true
+fi
+log_success "Removed Claude Code commands, skills & plugin"
 
-# Remove Antigravity skill
-rm -rf "$HOME/.gemini/config/skills/know-it" "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
-log_success "Removed Antigravity skill"
+# Remove Antigravity skills, workflows & plugin
+for s in how bts why where know-it know-how; do
+    rm -rf "$HOME/.gemini/config/skills/$s" 2>/dev/null || true
+    rm -f "$HOME/.gemini/config/workflows/$s.md" 2>/dev/null || true
+    rm -f "$HOME/.gemini/config/global_workflows/$s.md" 2>/dev/null || true
+done
+rm -rf "$HOME/.gemini/config/plugins/know-it" 2>/dev/null || true
+log_success "Removed Antigravity skills, workflows & plugin"
 
 # Remove OpenCode bindings
 for f in how.md bts.md why.md where.md; do

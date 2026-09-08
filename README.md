@@ -34,6 +34,18 @@ cd know-it
 
 The installer scans for available agents, presents an interactive numbered selection (e.g. `1. Claude Code`, `2. Antigravity`, ..., `N. All [Recommended]`), and lets you choose between `1. Latest Release [Recommended]` or `2. Main branch (main)`.
 
+### Claude Code Plugin Store
+
+In Claude Code, you can also install `know-it` natively via the plugin manager:
+
+```bash
+# From GitHub repository
+claude plugin install Chintanpatel24/know-it
+
+# Or from local clone
+claude plugin install .
+```
+
 ---
 
 ## The One-Liner Update
@@ -143,8 +155,8 @@ Suppose you run:
 
 | Platform | Type | Installation Location |
 | :--- | :--- | :--- |
-| **Claude Code** | Slash Commands & Skill | `~/.claude/commands/*.md` & `~/.claude/skills/know-it/` |
-| **Google Antigravity** | Skill Package | `~/.gemini/config/skills/know-it/SKILL.md` |
+| **Claude Code** | Slash Commands, Skill & Plugin | `~/.claude/commands/*.md`, `~/.claude/skills/know-it/`, Plugin Store |
+| **Google Antigravity** | Slash Commands & Skill Suite | `~/.gemini/config/workflows/*.md`, `~/.gemini/config/skills/{how,bts,why,where,know-it}/` |
 | **OpenCode** | Slash Commands & Skill | `~/.config/opencode/commands/*.md` & `~/.config/opencode/skills/know-it/` |
 | **Codex CLI / Operator** | Skill Package | `~/.codex/skills/know-it/` |
 | **AgentSkills (Standard)** | Universal Agent Skill | `~/.agentskills/know-it/` |

@@ -1,3 +1,8 @@
+---
+description: Real-world use cases, value proposition & personal aims
+argument-hint: <github-repo-url-or-slug>
+---
+
 # `/why` - Use Cases, Practical Value & Personal Aims
 
 You are running `know-it` in **Use Cases & Utility (Why)** mode.

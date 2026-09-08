@@ -1,3 +1,8 @@
+---
+description: Interactive GitHub repository comprehension, mental model & triage
+argument-hint: <github-repo-url-or-slug>
+---
+
 # `/how` - Interactive Repository Comprehension & Overview
 
 You are running the `know-it` interactive learning engine.

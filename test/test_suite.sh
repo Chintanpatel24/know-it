@@ -54,6 +54,10 @@ assert_success "Template ARCHITECTURE.md exists" test -f "${SCRIPT_DIR}/template
 
 # Test 6: Skill definitions exist
 assert_success "SKILL.md exists" test -f "${SCRIPT_DIR}/skills/know-it/SKILL.md"
+assert_success "Skill how exists" test -f "${SCRIPT_DIR}/skills/how/SKILL.md"
+assert_success "Skill bts exists" test -f "${SCRIPT_DIR}/skills/bts/SKILL.md"
+assert_success "Skill why exists" test -f "${SCRIPT_DIR}/skills/why/SKILL.md"
+assert_success "Skill where exists" test -f "${SCRIPT_DIR}/skills/where/SKILL.md"
 assert_success "Triage reference exists" test -f "${SCRIPT_DIR}/skills/know-it/references/triage-guide.md"
 assert_success "Output schema exists" test -f "${SCRIPT_DIR}/skills/know-it/references/output-schema.md"
 
@@ -62,6 +66,10 @@ assert_success "Command /how exists" test -f "${SCRIPT_DIR}/commands/how.md"
 assert_success "Command /bts exists" test -f "${SCRIPT_DIR}/commands/bts.md"
 assert_success "Command /why exists" test -f "${SCRIPT_DIR}/commands/why.md"
 assert_success "Command /where exists" test -f "${SCRIPT_DIR}/commands/where.md"
+
+# Test 7b: Claude Code Plugin manifests exist
+assert_success "Claude plugin.json exists" test -f "${SCRIPT_DIR}/.claude-plugin/plugin.json"
+assert_success "Claude marketplace.json exists" test -f "${SCRIPT_DIR}/.claude-plugin/marketplace.json"
 
 # Test 8: Rules exist
 assert_success "Rule know-it.md exists" test -f "${SCRIPT_DIR}/rules/know-it.md"

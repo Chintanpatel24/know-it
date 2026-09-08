@@ -1,0 +1,10 @@
+{
+  "name": "know-it",
+  "description": "Universal AI agent skill and slash-command suite for deep GitHub repository comprehension. Learn any codebase at any depth with /how, /bts, /why, and /where.",
+  "author": {
+    "name": "Chintan Patel",
+    "url": "https://github.com/Chintanpatel24"
+  },
+  "homepage": "https://github.com/Chintanpatel24/know-it",
+  "version": "1.0.0"
+}

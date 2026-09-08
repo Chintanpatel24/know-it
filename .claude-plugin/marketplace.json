@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "know-it",
+  "description": "Marketplace for know-it repository comprehension suite",
+  "owner": {
+    "name": "Chintan Patel",
+    "url": "https://github.com/Chintanpatel24"
+  },
+  "plugins": [
+    {
+      "name": "know-it",
+      "description": "Universal GitHub repository comprehension and architecture engine with /how, /bts, /why, and /where slash commands.",
+      "author": {
+        "name": "Chintan Patel"
+      },
+      "category": "developer-tools",
+      "source": "./",
+      "homepage": "https://github.com/Chintanpatel24/know-it"
+    }
+  ]
+}

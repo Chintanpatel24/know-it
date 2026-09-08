@@ -1,3 +1,8 @@
+---
+description: Codebase architecture map, directory tree & entry points
+argument-hint: <github-repo-url-or-slug>
+---
+
 # `/where` - Codebase Navigation & Architecture Map
 
 You are running `know-it` in **Code Geography & Navigation (Where)** mode.
