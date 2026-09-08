@@ -11,8 +11,24 @@ Target repository: `$ARGUMENTS`
    - If `$ARGUMENTS` is empty, ask the user: "Which GitHub repository would you like to inspect behind the scenes? (e.g. `ettercap/ettercap`)".
 
 2. **Ingest & Inspect Code**:
-   - Run `know-it fetch "$ARGUMENTS"` to ensure the repo is cached.
-   - Inspect entry points and core processing loops (e.g. using `know-it tree "$ARGUMENTS" 2` and checking main source directories).
+   - Locate the `know-it` CLI tool:
+     ```bash
+     KNOW_IT="know-it"
+     if ! command -v know-it &>/dev/null; then
+         for p in "$HOME/.local/bin/know-it" \
+                  "$HOME/.gemini/config/skills/know-it/bin/know-it" \
+                  "$HOME/.claude/skills/know-it/bin/know-it" \
+                  "$HOME/.config/opencode/skills/know-it/bin/know-it" \
+                  "$HOME/.codex/skills/know-it/bin/know-it"; do
+             if [[ -x "$p" ]]; then
+                 KNOW_IT="$p"
+                 break
+             fi
+         done
+     fi
+     ```
+   - Run `$KNOW_IT fetch "$ARGUMENTS"` to ensure the repo is cached.
+   - Inspect entry points and core processing loops (e.g. using `$KNOW_IT tree "$ARGUMENTS" 2` and checking main source directories).
 
 3. **Execute Deep-Dive Analysis**:
    - **Why this language and libraries?** Explain why the author picked C, Rust, Go, Python, etc. (e.g. raw socket access, garbage collection avoidance, concurrency primitives, libpcap integration).
