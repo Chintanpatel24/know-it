@@ -37,7 +37,7 @@ Target repository: `$ARGUMENTS`
    - Read the summary output (languages, entry points, doc files).
 
 3. **Interactive Triage (Ask the User)**:
-   Present the user with a multiple-choice triage:
+   Present the user with a 4-question multiple-choice triage:
    - **Question 1: Depth of Understanding**
      - `A) High-Level Overview & Mental Model`: Clear analogies, purpose, how to use it.
      - `B) Architecture & Systems Design`: Component interactions, module boundaries, data flows.
@@ -50,13 +50,17 @@ Target repository: `$ARGUMENTS`
    - **Question 3: Output Format**
      - `A) Create .know-it/<repo>/ Markdown Dossier + Chat Summary`: Generate `.know-it/<repo>/OVERVIEW.md` and print summary.
      - `B) Interactive Chat Walkthrough`: Walk through the analysis in chat without generating files.
+   - **Question 4: Visual Diagram Style**
+     - `A) Clean Mermaid Diagram [Recommended]`: Modern flowchart with subgraphs, max 5-8 nodes, and reading legend.
+     - `B) Structured ASCII Box-Art`: Universal terminal-friendly boxed diagram in a text block.
+     - `C) Text-Only (No Diagrams)`: Deep narrative explanation without diagrams.
 
-4. **Analyze & Generate Output**:
-   - Once the user answers, inspect the relevant source files in the cached repository.
-   - If file output was requested, create `.know-it/<repo-name>/OVERVIEW.md` following the template standards:
-     - Clear elevator pitch & mental model analogy
-     - Mermaid diagram of high-level flow
-     - Feature highlights & capabilities
-     - Step-by-step practical usage & command examples
-     - Links to companion files (`BTS.md`, `USE_CASES.md`, `ARCHITECTURE.md`)
-   - Print a rich executive summary in the chat UI with the diagram and key takeaways.
+4. **Token-Optimized Docs-First Inspection Protocol**:
+   - Run `$KNOW_IT docs "$ARGUMENTS"` or examine the `docs` metadata first to read architecture docs before diving into code.
+   - Run `$KNOW_IT tree "$ARGUMENTS" 2` to identify entry points.
+   - Use `$KNOW_IT inspect "$ARGUMENTS" <path> <start> <end>` to read surgical code slices, never loading massive files (>150 lines) into context.
+
+5. **Analyze & Generate Masterclass Output**:
+   - Follow the 5-stage Masterclass progression: 1) Aha! Mental Model, 2) Architectural Trade-offs & rejected alternatives, 3) End-to-end single artifact trace, 4) The Secret Sauce with code autopsy, 5) How to Hack & Learn.
+   - If file output was requested, create `.know-it/<repo-name>/OVERVIEW.md` following the template standards.
+   - Print a rich executive summary in the chat UI with the chosen diagram style and key takeaways.

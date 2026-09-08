@@ -5,9 +5,11 @@
 ---
 
 ## 1. Bird's Eye Codebase Map
-```
+```text
 {{DIRECTORY_TREE_ASCII}}
 ```
+
+---
 
 ## 2. Critical Entry Points & Dispatchers
 | Path | Role / Responsibility | Key Functions / Classes |
@@ -15,6 +17,8 @@
 | `{{ENTRY_POINT_1}}` | {{ENTRY_POINT_1_ROLE}} | `{{ENTRY_POINT_1_SYMBOLS}}` |
 | `{{ENTRY_POINT_2}}` | {{ENTRY_POINT_2_ROLE}} | `{{ENTRY_POINT_2_SYMBOLS}}` |
 | `{{ENTRY_POINT_3}}` | {{ENTRY_POINT_3_ROLE}} | `{{ENTRY_POINT_3_SYMBOLS}}` |
+
+---
 
 ## 3. Modular Decomposition
 ### Core Engine / Kernel (`{{MODULE_1_PATH}}`)
@@ -31,13 +35,17 @@
 - **Purpose**: {{MODULE_3_PURPOSE}}
 - **Key Files**: `{{MODULE_3_FILES}}`
 
-## 4. End-to-End Data Lifecycle & Information Flow
-```mermaid
-graph TD
-    {{DATA_FLOW_MERMAID}}
-```
+---
 
-## 5. Where To Hack / Extend
+## 4. End-to-End Data Lifecycle & Information Flow
+<!-- Visual diagram: Clean Mermaid (5-8 nodes max with subgraphs and numbered action edges) OR Structured ASCII Box-Art -->
+{{DIAGRAM_BLOCK}}
+
+> **How to Read This Flow**: {{DIAGRAM_EXPLANATION}}
+
+---
+
+## 5. Where To Hack: Practical Modification Guide
 - **To add a new feature or plugin**: Start editing in `{{EXTEND_FEATURE_PATH}}`
 - **To modify protocol/data processing**: Look at `{{EXTEND_DATA_PATH}}`
 - **To adjust configuration or CLI arguments**: Look at `{{EXTEND_CLI_PATH}}`

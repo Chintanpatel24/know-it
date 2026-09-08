@@ -200,9 +200,11 @@ EOF
 cmd_inspect() {
     local target="${1:-}"
     local rel_file="${2:-}"
+    local start_line="${3:-}"
+    local end_line="${4:-}"
 
     if [[ -z "$target" || -z "$rel_file" ]]; then
-        log_err "Usage: know-it inspect <github-url-or-slug> <relative-file-path>"
+        log_err "Usage: know-it inspect <github-url-or-slug> <relative-file-path> [start_line] [end_line]"
         exit 1
     fi
 
@@ -221,7 +223,67 @@ cmd_inspect() {
         exit 1
     fi
 
-    awk '{printf "%4d | %s\n", NR, $0}' "$target_file"
+    local total_lines
+    total_lines=$(wc -l < "$target_file" | tr -d ' ')
+
+    if [[ -n "$start_line" && -n "$end_line" ]]; then
+        awk -v s="$start_line" -v e="$end_line" 'NR >= s && NR <= e {printf "%4d | %s\n", NR, $0}' "$target_file"
+    elif [[ -n "$start_line" ]]; then
+        awk -v s="$start_line" 'NR >= s && NR <= (s + 99) {printf "%4d | %s\n", NR, $0}' "$target_file"
+    else
+        if [[ "$total_lines" -gt 150 ]]; then
+            awk 'NR <= 100 {printf "%4d | %s\n", NR, $0}' "$target_file"
+            echo -e "\n--- [Showing first 100 of ${total_lines} lines. For surgical token-efficient reading, use: know-it inspect ${slug} ${rel_file} <start> <end>] ---"
+        else
+            awk '{printf "%4d | %s\n", NR, $0}' "$target_file"
+        fi
+    fi
+}
+
+cmd_docs() {
+    local target="${1:-}"
+    if [[ -z "$target" ]]; then
+        log_err "Usage: know-it docs <github-url-or-slug>"
+        exit 1
+    fi
+
+    local slug
+    slug=$(normalize_repo "$target")
+    local cache_dir
+    cache_dir=$(get_cache_path "$slug")
+
+    if [[ ! -d "$cache_dir" ]]; then
+        cmd_fetch "$slug" >/dev/null
+    fi
+
+    echo -e "${BOLD}Documentation & Architecture Files for ${slug}:${RESET}\n"
+    python3 - <<EOF
+import os
+import glob
+
+cache_dir = "$cache_dir"
+doc_patterns = [
+    "README*", "ARCHITECTURE*", "DESIGN*", "CONTRIBUTING*",
+    "docs/**", "Documentation/**", "doc/**", "wiki/**",
+    "man/*", "*.1", "*.pod"
+]
+
+found = set()
+for pat in doc_patterns:
+    full_pat = os.path.join(cache_dir, pat)
+    for p in glob.glob(full_pat, recursive=True):
+        if os.path.isfile(p):
+            rel = os.path.relpath(p, cache_dir)
+            if not any(ign in rel.split(os.sep) for ign in ['.git', 'node_modules', 'vendor', 'target', 'build']):
+                found.add(rel)
+
+if not found:
+    print("  (No dedicated documentation files found in root or docs/)")
+else:
+    for f in sorted(found):
+        size = os.path.getsize(os.path.join(cache_dir, f))
+        print(f"  * {f} ({size} bytes)")
+EOF
 }
 
 cmd_list() {
@@ -317,8 +379,9 @@ know-it - Intelligent GitHub repo comprehension & architecture engine
 
 Usage:
   know-it fetch <github-url-or-slug>       Clone/update repo into local cache and return JSON summary
+  know-it docs <github-url-or-slug>        List all architectural and documentation files
   know-it tree <github-url-or-slug> [depth] Print ASCII directory tree of cached repo
-  know-it inspect <slug> <file-path>       View file contents from cached repo with line numbers
+  know-it inspect <slug> <file> [start] [end] View file contents with line numbers (surgical slices)
   know-it list                             List all repositories currently in local cache
   know-it clean [slug|--all]               Remove repository or entire cache
   know-it update [OPTIONS]                 Scan existing know-it presence and update agent skills
@@ -328,8 +391,9 @@ Usage:
 
 Examples:
   know-it fetch ettercap/ettercap
+  know-it docs ettercap/ettercap
   know-it tree ettercap/ettercap 2
-  know-it inspect ettercap/ettercap src/ec_main.c
+  know-it inspect ettercap/ettercap src/ec_main.c 50 120
   know-it update
 EOF
 }
@@ -338,6 +402,10 @@ case "${1:-help}" in
     fetch)
         shift
         cmd_fetch "$@"
+        ;;
+    docs)
+        shift
+        cmd_docs "$@"
         ;;
     tree)
         shift

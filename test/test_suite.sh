@@ -95,6 +95,15 @@ entry_points = [f for f in os.listdir(cache_dir) if f.startswith("main.")]
 assert "main.py" in entry_points
 '
 
+# Test 10: CLI docs command check
+assert_success "CLI docs command check" "${SCRIPT_DIR}/bin/know-it" help
+
+# Test 11: Inspect surgical line slicing logic
+assert_success "Inspect line slicing logic" bash -c '
+out=$('"${SCRIPT_DIR}/bin/know-it"' inspect ettercap/ettercap doc/threads 1 10 2>/dev/null || true)
+echo "$out" | grep -q "ABSTRACT"
+'
+
 rm -rf "$MOCK_DIR"
 
 echo ""

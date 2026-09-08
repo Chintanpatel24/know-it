@@ -94,20 +94,25 @@ Launches an interactive multiple-choice questionnaire to tailor the learning ses
 - **Question 3: Output Deliverable**
   - Workspace Dossier (`.know-it/<repo>/OVERVIEW.md` + chat summary)
   - Interactive Chat Walkthrough (Chat-only conversation)
+- **Question 4: Visual Diagram Style**
+  - Clean Mermaid Diagram [Recommended] (5-8 nodes max, functional subgraphs, numbered action steps, and reading legend)
+  - Structured ASCII Box-Art (Universal terminal-friendly boxed diagram in a text block)
+  - Text-Only / No Diagrams (Deep narrative explanation without visual diagrams)
 
 ---
 
-### 2. `/bts <github-repo-link>` -- Behind The Scenes: Systems & Code Logic
+### 2. `/bts <github-repo-link> [--ascii]` -- Behind The Scenes: Systems & Code Logic
 *Fast direct mode -- skips questions.* Performs a deep technical dive into:
 - **Why this language & libraries?** (e.g., Why C was chosen over Python: raw socket manipulation, zero GC overhead, direct memory pointers).
 - **Under-the-hood OS mechanics**: Raw sockets (`AF_PACKET`, `SOCK_RAW`), `ioctl`, kernel packet filtering, `libpcap` hooks.
-- **The Core Engine Loop**: Sequence diagram of the event/packet lifecycle.
-- **Code Autopsy**: Line-by-line breakdown of the critical 20-50 lines where the core logic executes.
+- **End-to-End Trace**: Concrete walk-through tracing a single packet or request from ingress to egress.
+- **The Secret Sauce & Code Autopsy**: Line-by-line breakdown of the critical 20-50 lines where the core logic executes.
+- **Diagram Style**: Generates Clean Mermaid by default, or Structured ASCII Box-Art when `--ascii` is appended.
 - **Output**: Generates `.know-it/<repo-name>/BTS.md`.
 
 ---
 
-### 3. `/why <github-repo-link>` -- Real-World Use Cases & Personal Aims
+### 3. `/why <github-repo-link> [--ascii]` -- Real-World Use Cases & Personal Aims
 *Fast direct mode -- skips questions.* Unpacks the practical utility:
 - **Value Proposition**: The exact problem it solves and why alternatives fall short.
 - **Real-World Scenarios**: Concrete use cases (who uses it, the challenge, the payoff).
@@ -117,11 +122,11 @@ Launches an interactive multiple-choice questionnaire to tailor the learning ses
 
 ---
 
-### 4. `/where <github-repo-link>` -- Code Geography & Architecture Map
+### 4. `/where <github-repo-link> [--ascii]` -- Code Geography & Architecture Map
 *Fast direct mode -- skips questions.* Maps the codebase:
 - **ASCII Directory Map**: Annotated tree of key modules and responsibilities.
 - **Critical Entry Points**: Table of files where execution begins (`main()`, dispatchers, CLI parsing).
-- **Data Lifecycle**: Mermaid flowchart (`graph TD`) tracing data from ingress to egress.
+- **Data Lifecycle**: Visual data flowchart (Clean Mermaid or ASCII) tracing data from ingress to egress.
 - **"Where To Hack"**: The exact files to touch if you want to add a feature or tweak protocol logic.
 - **Output**: Generates `.know-it/<repo-name>/ARCHITECTURE.md`.
 
@@ -172,11 +177,14 @@ The bundled CLI tool manages repository cloning, caching, and inspection:
 # Fetch and inspect repository metadata (outputs JSON summary)
 know-it fetch ettercap/ettercap
 
+# Discover all architectural and documentation files (README, docs/, architecture)
+know-it docs ettercap/ettercap
+
 # View clean ASCII directory tree up to depth 2
 know-it tree ettercap/ettercap 2
 
-# Inspect a specific file with line numbers
-know-it inspect ettercap/ettercap src/ec_main.c
+# Inspect surgical code slice with line numbers (token-efficient)
+know-it inspect ettercap/ettercap src/ec_main.c 50 120
 
 # List all cached repositories and disk space
 know-it list
