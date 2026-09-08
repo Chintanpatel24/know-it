@@ -19,10 +19,10 @@ RED="\033[31m"
 MAGENTA="\033[35m"
 RESET="\033[0m"
 
-log_info()    { echo -e "  ${BLUE}ℹ${RESET} $*"; }
-log_success() { echo -e "  ${GREEN}✓${RESET} $*"; }
-log_warn()    { echo -e "  ${YELLOW}⚠${RESET} $*"; }
-log_error()   { echo -e "  ${RED}✗${RESET} $*" >&2; }
+log_info()    { echo -e "  ${BLUE}[INFO]${RESET} $*"; }
+log_success() { echo -e "  ${GREEN}[OK]${RESET} $*"; }
+log_warn()    { echo -e "  ${YELLOW}[WARN]${RESET} $*"; }
+log_error()   { echo -e "  ${RED}[ERROR]${RESET} $*" >&2; }
 
 print_banner() {
     echo -e "${CYAN}${BOLD}"
@@ -47,7 +47,7 @@ detect_source_dir() {
         echo "$script_dir"
     else
         # Running via pipe (curl | bash)
-        echo -e "${BLUE}▶ Fetching know-it repository into ${LOCAL_SHARE_DIR}...${RESET}"
+        echo -e "${BLUE}==> Fetching know-it repository into ${LOCAL_SHARE_DIR}...${RESET}"
         mkdir -p "$(dirname "$LOCAL_SHARE_DIR")"
         if [[ -d "${LOCAL_SHARE_DIR}/.git" ]]; then
             git -C "$LOCAL_SHARE_DIR" pull --quiet origin main 2>/dev/null || true
@@ -153,7 +153,6 @@ install_claude() {
             mkdir -p "$cmd_dir" "$skill_dir"
             cp "${SRC_DIR}/commands/"*.md "$cmd_dir/"
             cp -r "${SRC_DIR}/skills/know-it/"* "$skill_dir/"
-            # Clean legacy know-how directory if exists
             rm -rf "$HOME/.claude/skills/know-how" 2>/dev/null || true
             log_success "Slash commands installed: /how, /bts, /why, /where (in ${cmd_dir})"
             log_success "Skill package installed: ${skill_dir}"
@@ -182,7 +181,6 @@ install_antigravity() {
         else
             mkdir -p "$agy_skill_dir"
             cp -r "${SRC_DIR}/skills/know-it/"* "$agy_skill_dir/"
-            # Clean legacy know-how directory if exists
             rm -rf "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
             log_success "Antigravity skill installed: ${agy_skill_dir}/SKILL.md"
         fi
@@ -213,7 +211,6 @@ install_opencode() {
             mkdir -p "$oc_cmd_dir" "$oc_skill_dir"
             cp "${SRC_DIR}/commands/"*.md "$oc_cmd_dir/"
             cp -r "${SRC_DIR}/skills/know-it/"* "$oc_skill_dir/"
-            # Clean legacy know-how directory if exists
             rm -rf "$HOME/.config/opencode/skills/know-how" 2>/dev/null || true
             log_success "OpenCode slash commands installed: ${oc_cmd_dir}"
             log_success "OpenCode skill installed: ${oc_skill_dir}"
@@ -309,11 +306,11 @@ install_codex
 install_universal_agentskills
 install_ide_rules
 
-echo -e "${GREEN}${BOLD}🎉 Installation Complete!${RESET}\n"
+echo -e "${GREEN}${BOLD}Installation Complete!${RESET}\n"
 echo -e "You can now use ${BOLD}know-it${RESET} in your AI agents:"
-echo -e "  • ${CYAN}/how <github-repo-link>${RESET}  -> Interactive triage & project overview"
-echo -e "  • ${CYAN}/bts <github-repo-link>${RESET}  -> Behind-The-Scenes systems & code logic"
-echo -e "  • ${CYAN}/why <github-repo-link>${RESET}  -> Real-world use cases & personal aims"
-echo -e "  • ${CYAN}/where <github-repo-link>${RESET}-> Codebase map, entry points & data flow"
+echo -e "  * ${CYAN}/how <github-repo-link>${RESET}  -> Interactive triage & project overview"
+echo -e "  * ${CYAN}/bts <github-repo-link>${RESET}  -> Behind-The-Scenes systems & code logic"
+echo -e "  * ${CYAN}/why <github-repo-link>${RESET}  -> Real-world use cases & personal aims"
+echo -e "  * ${CYAN}/where <github-repo-link>${RESET}-> Codebase map, entry points & data flow"
 echo ""
 echo -e "Example: ${BOLD}/how ettercap/ettercap${RESET}"

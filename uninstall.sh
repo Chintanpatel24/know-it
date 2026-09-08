@@ -9,8 +9,8 @@ YELLOW="\033[33m"
 RED="\033[31m"
 RESET="\033[0m"
 
-log_info()    { echo -e "  ${YELLOW}•${RESET} $*"; }
-log_success() { echo -e "  ${GREEN}✓${RESET} $*"; }
+log_info()    { echo -e "  ${YELLOW}*${RESET} $*"; }
+log_success() { echo -e "  ${GREEN}[OK]${RESET} $*"; }
 
 echo -e "${BOLD}Uninstalling know-it skill suite...${RESET}\n"
 
@@ -64,4 +64,4 @@ for cache_dir in "$HOME/.cache/know-it" "$HOME/.cache/know-how"; do
     fi
 done
 
-echo -e "\n${GREEN}${BOLD}✓ know-it successfully uninstalled.${RESET}"
+echo -e "\n${GREEN}${BOLD}know-it successfully uninstalled.${RESET}"

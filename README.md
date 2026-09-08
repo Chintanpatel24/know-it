@@ -1,8 +1,8 @@
-# know-it 🧠
+# know-it
 
 > **Universal Agent Skill & Slash Command Suite for Deep GitHub Repository Comprehension**
 >
-> Learn any codebase at any depth — from intuitive mental models to low-level systems logic, raw socket mechanics, and architecture blueprints.
+> Learn any codebase at any depth -- from intuitive mental models to low-level systems logic, raw socket mechanics, and architecture blueprints.
 
 [![Agent Skills](https://img.shields.io/badge/standard-AgentSkills-purple.svg)](#supported-agents)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Supported-orange.svg)](#supported-agents)
@@ -13,7 +13,7 @@
 
 ---
 
-## ⚡ The One-Liner Install
+## The One-Liner Install
 
 Install `know-it` across all detected AI agents on your machine with a single command:
 
@@ -33,7 +33,7 @@ The installer auto-detects installed AI agents and instantly registers the slash
 
 ---
 
-## 🎯 What is `know-it`?
+## What is `know-it`?
 
 When you encounter an unfamiliar GitHub repository, reading through thousands of lines of code or deciphering vague READMEs takes hours. 
 
@@ -45,9 +45,9 @@ When you encounter an unfamiliar GitHub repository, reading through thousands of
 
 ---
 
-## 🕹️ Command Suite
+## Command Suite
 
-### 1. `/how <github-repo-link>` — The Interactive Master Triage
+### 1. `/how <github-repo-link>` -- The Interactive Master Triage
 Launches an interactive multiple-choice questionnaire to tailor the learning session to your exact needs:
 - **Question 1: Depth of Understanding**
   - High-Level Overview & Mental Model (Analogies, big picture, practical CLI usage)
@@ -64,18 +64,18 @@ Launches an interactive multiple-choice questionnaire to tailor the learning ses
 
 ---
 
-### 2. `/bts <github-repo-link>` — Behind The Scenes: Systems & Code Logic
-*Fast direct mode — skips questions.* Performs a deep technical dive into:
+### 2. `/bts <github-repo-link>` -- Behind The Scenes: Systems & Code Logic
+*Fast direct mode -- skips questions.* Performs a deep technical dive into:
 - **Why this language & libraries?** (e.g., Why C was chosen over Python: raw socket manipulation, zero GC overhead, direct memory pointers).
 - **Under-the-hood OS mechanics**: Raw sockets (`AF_PACKET`, `SOCK_RAW`), `ioctl`, kernel packet filtering, `libpcap` hooks.
 - **The Core Engine Loop**: Sequence diagram of the event/packet lifecycle.
-- **Code Autopsy**: Line-by-line breakdown of the critical 20–50 lines where the core logic executes.
+- **Code Autopsy**: Line-by-line breakdown of the critical 20-50 lines where the core logic executes.
 - **Output**: Generates `.know-it/<repo-name>/BTS.md`.
 
 ---
 
-### 3. `/why <github-repo-link>` — Real-World Use Cases & Personal Aims
-*Fast direct mode — skips questions.* Unpacks the practical utility:
+### 3. `/why <github-repo-link>` -- Real-World Use Cases & Personal Aims
+*Fast direct mode -- skips questions.* Unpacks the practical utility:
 - **Value Proposition**: The exact problem it solves and why alternatives fall short.
 - **Real-World Scenarios**: Concrete use cases (who uses it, the challenge, the payoff).
 - **Personal Aims**: How you can fork, modify, or steal patterns from this repo for your own software.
@@ -84,8 +84,8 @@ Launches an interactive multiple-choice questionnaire to tailor the learning ses
 
 ---
 
-### 4. `/where <github-repo-link>` — Code Geography & Architecture Map
-*Fast direct mode — skips questions.* Maps the codebase:
+### 4. `/where <github-repo-link>` -- Code Geography & Architecture Map
+*Fast direct mode -- skips questions.* Maps the codebase:
 - **ASCII Directory Map**: Annotated tree of key modules and responsibilities.
 - **Critical Entry Points**: Table of files where execution begins (`main()`, dispatchers, CLI parsing).
 - **Data Lifecycle**: Mermaid flowchart (`graph TD`) tracing data from ingress to egress.
@@ -94,7 +94,7 @@ Launches an interactive multiple-choice questionnaire to tailor the learning ses
 
 ---
 
-## 🔍 Concrete Example: Analyzing Ettercap
+## Concrete Example: Analyzing Ettercap
 
 Suppose you run:
 ```text
@@ -118,7 +118,7 @@ Suppose you run:
 
 ---
 
-## 🤖 Supported Agents
+## Supported Agents
 
 | Platform | Type | Installation Location |
 | :--- | :--- | :--- |
@@ -131,7 +131,7 @@ Suppose you run:
 
 ---
 
-## 🛠️ CLI Helper (`know-it`)
+## CLI Helper (`know-it`)
 
 The bundled CLI tool manages repository cloning, caching, and inspection:
 
@@ -160,7 +160,7 @@ know-it info
 
 ---
 
-## 📁 Generated Documentation Structure
+## Generated Documentation Structure
 
 When used within any project, `know-it` creates a dedicated, clean folder:
 
@@ -175,7 +175,7 @@ When used within any project, `know-it` creates a dedicated, clean folder:
 
 ---
 
-## 🗑️ Uninstallation
+## Uninstallation
 
 To cleanly remove `know-it` from all agents:
 
@@ -185,6 +185,6 @@ To cleanly remove `know-it` from all agents:
 
 ---
 
-## 📄 License
+## License
 
 MIT License. See [LICENSE](./LICENSE) for details.

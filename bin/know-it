@@ -16,10 +16,10 @@ RED="\033[31m"
 CYAN="\033[36m"
 RESET="\033[0m"
 
-log_info()  { echo -e "${BLUE}ℹ${RESET} $*" >&2; }
-log_ok()    { echo -e "${GREEN}✓${RESET} $*" >&2; }
-log_warn()  { echo -e "${YELLOW}⚠${RESET} $*" >&2; }
-log_err()   { echo -e "${RED}✗${RESET} $*" >&2; }
+log_info()  { echo -e "${BLUE}[INFO]${RESET} $*" >&2; }
+log_ok()    { echo -e "${GREEN}[OK]${RESET} $*" >&2; }
+log_warn()  { echo -e "${YELLOW}[WARN]${RESET} $*" >&2; }
+log_err()   { echo -e "${RED}[ERROR]${RESET} $*" >&2; }
 
 # Normalize any GitHub URL, git SSH string, or "owner/repo" slug
 normalize_repo() {
@@ -182,12 +182,12 @@ def print_tree(dir_path, prefix="", current_depth=1):
     entries_count = len(entries)
     for index, entry in enumerate(entries):
         is_last = (index == entries_count - 1)
-        connector = "└── " if is_last else "├── "
+        connector = "+-- " if is_last else "|-- "
         full_path = os.path.join(dir_path, entry)
         
         if os.path.isdir(full_path):
             print(f"{prefix}{connector}{entry}/")
-            sub_prefix = prefix + ("    " if is_last else "│   ")
+            sub_prefix = prefix + ("    " if is_last else "|   ")
             print_tree(full_path, sub_prefix, current_depth + 1)
         else:
             print(f"{prefix}{connector}{entry}")
@@ -238,7 +238,7 @@ cmd_list() {
         count=$(find "$repo_dir" -maxdepth 3 -not -path '*/.*' | wc -l)
         local du_size
         du_size=$(du -sh "$repo_dir" 2>/dev/null | cut -f1)
-        echo -e "  • ${CYAN}${rel_path}${RESET} (${du_size}, ~${count} files)"
+        echo -e "  * ${CYAN}${rel_path}${RESET} (${du_size}, ~${count} files)"
         found=1
     done < <(find "$CACHE_BASE" -mindepth 2 -maxdepth 2 -type d -print0 2>/dev/null)
 
@@ -277,7 +277,7 @@ cmd_info() {
         local name="$1"
         local path="$2"
         if [[ -e "$path" ]]; then
-            echo -e "  [${GREEN}✓${RESET}] ${BOLD}${name}${RESET}: Installed at ${path}"
+            echo -e "  [${GREEN}x${RESET}] ${BOLD}${name}${RESET}: Installed at ${path}"
         else
             echo -e "  [ ] ${BOLD}${name}${RESET}: Not installed (${path})"
         fi
