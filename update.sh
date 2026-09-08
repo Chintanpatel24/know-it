@@ -122,7 +122,7 @@ if [[ -f "$HOME/.claude/commands/how.md" || -d "$HOME/.claude/skills/know-it" ]]
     INSTALLED_LABELS+=("Claude Code (~/.claude)")
 fi
 
-if [[ -f "$HOME/.gemini/config/skills/know-it/SKILL.md" ]]; then
+if [[ -f "$HOME/.gemini/config/skills/know-it/SKILL.md" || -f "$HOME/.gemini/config/skills/how/SKILL.md" ]]; then
     INSTALLED_AGENTS+=("antigravity")
     INSTALLED_LABELS+=("Antigravity / Google AGY (~/.gemini)")
 fi
@@ -308,7 +308,7 @@ update_cli_helper() {
     echo ""
 }
 
-# Update Claude Code
+# Update Claude Code (Commands, Skills, Plugin Store)
 update_claude() {
     if ! is_agent_selected "claude"; then return; fi
 
@@ -326,29 +326,50 @@ update_claude() {
         mkdir -p "${skill_dir}/bin"
         cp "${SRC_DIR}/bin/know-it" "${skill_dir}/bin/know-it"
         chmod +x "${skill_dir}/bin/know-it"
-        rm -rf "$HOME/.claude/skills/know-how" 2>/dev/null || true
-        log_success "Claude Code slash commands and self-contained skill updated."
+
+        if command -v claude &>/dev/null; then
+            claude plugin update "know-it" 2>/dev/null || true
+        fi
+        log_success "Claude Code slash commands, skill and plugin updated."
     fi
     echo ""
 }
 
-# Update Antigravity
+# Update Antigravity (Skills, Workflows, Plugin)
 update_antigravity() {
     if ! is_agent_selected "antigravity"; then return; fi
 
     echo -e "${BOLD}3. Updating Antigravity (Google AGY)...${RESET}"
-    local agy_skill_dir="$HOME/.gemini/config/skills/know-it"
+    local agy_config="$HOME/.gemini/config"
 
     if [[ $DRY_RUN -eq 1 ]]; then
-        log_info "[Dry-Run] Would update skill in ${agy_skill_dir}"
+        log_info "[Dry-Run] Would update skills and workflows in ${agy_config}"
     else
-        mkdir -p "$agy_skill_dir"
-        cp -r "${SRC_DIR}/skills/know-it/"* "$agy_skill_dir/"
-        mkdir -p "${agy_skill_dir}/bin"
-        cp "${SRC_DIR}/bin/know-it" "${agy_skill_dir}/bin/know-it"
-        chmod +x "${agy_skill_dir}/bin/know-it"
-        rm -rf "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
-        log_success "Antigravity self-contained skill updated: ${agy_skill_dir}/SKILL.md"
+        for s in how bts why where know-it; do
+            local target_skill="${agy_config}/skills/${s}"
+            mkdir -p "${target_skill}/bin"
+            if [[ -d "${SRC_DIR}/skills/${s}" ]]; then
+                cp -r "${SRC_DIR}/skills/${s}/"* "${target_skill}/"
+            else
+                cp -r "${SRC_DIR}/skills/know-it/"* "${target_skill}/"
+            fi
+            cp "${SRC_DIR}/bin/know-it" "${target_skill}/bin/know-it"
+            chmod +x "${target_skill}/bin/know-it"
+        done
+
+        mkdir -p "${agy_config}/workflows" "${agy_config}/global_workflows"
+        for cmd in how bts why where; do
+            if [[ -f "${SRC_DIR}/commands/${cmd}.md" ]]; then
+                cp "${SRC_DIR}/commands/${cmd}.md" "${agy_config}/workflows/${cmd}.md"
+                cp "${SRC_DIR}/commands/${cmd}.md" "${agy_config}/global_workflows/${cmd}.md"
+            fi
+        done
+        if [[ -f "${SRC_DIR}/rules/know-it.md" ]]; then
+            cp "${SRC_DIR}/rules/know-it.md" "${agy_config}/workflows/know-it.md"
+            cp "${SRC_DIR}/rules/know-it.md" "${agy_config}/global_workflows/know-it.md"
+        fi
+
+        log_success "Antigravity slash commands and skills updated in ${agy_config}"
     fi
     echo ""
 }

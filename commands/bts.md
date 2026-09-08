@@ -1,3 +1,8 @@
+---
+description: Behind The Scenes systems mechanics, OS/kernel calls & code autopsy
+argument-hint: <github-repo-url-or-slug>
+---
+
 # `/bts` - Behind The Scenes: Systems & Code Logic
 
 You are running `know-it` in **Behind The Scenes (BTS)** mode.

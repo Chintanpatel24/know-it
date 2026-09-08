@@ -143,7 +143,6 @@ detect_and_sync_source() {
         }
     fi
 
-    # If skills/know-it not on default branch yet (pre-PR merge), fallback to feature branch
     if [[ ! -d "${LOCAL_SHARE_DIR}/skills/know-it" ]]; then
         git -C "$LOCAL_SHARE_DIR" checkout --quiet feature/know-it-suite 2>/dev/null || true
     fi
@@ -301,7 +300,7 @@ install_cli_helper() {
     echo ""
 }
 
-# 2. Install Claude Code directly into ~/.claude/
+# 2. Install Claude Code (Commands, Skills, and Plugin Store)
 install_claude() {
     if ! is_agent_selected "claude"; then return; fi
 
@@ -312,38 +311,81 @@ install_claude() {
     if [[ $DRY_RUN -eq 1 ]]; then
         log_info "[Dry-Run] Would install slash commands into ${cmd_dir}"
         log_info "[Dry-Run] Would install self-contained skill into ${skill_dir}"
+        log_info "[Dry-Run] Would register Claude Code plugin"
     else
         mkdir -p "$cmd_dir" "$skill_dir"
         cp "${SRC_DIR}/commands/"*.md "$cmd_dir/"
         cp -r "${SRC_DIR}/skills/know-it/"* "$skill_dir/"
-        # Ensure bin/know-it is inside the skill directory for self-containment
         mkdir -p "${skill_dir}/bin"
         cp "${SRC_DIR}/bin/know-it" "${skill_dir}/bin/know-it"
         chmod +x "${skill_dir}/bin/know-it"
         rm -rf "$HOME/.claude/skills/know-how" 2>/dev/null || true
-        log_success "Slash commands installed: /how, /bts, /why, /where (in ${cmd_dir})"
-        log_success "Self-contained skill installed: ${skill_dir}"
+
+        # Claude Code Plugin registration
+        if command -v claude &>/dev/null; then
+            log_info "Registering know-it in Claude Code plugin marketplace..."
+            claude plugin marketplace add "${SRC_DIR}" 2>/dev/null || claude plugin marketplace add "Chintanpatel24/know-it" 2>/dev/null || true
+            claude plugin install "know-it@know-it" 2>/dev/null || claude plugin install "know-it" 2>/dev/null || true
+        fi
+
+        log_success "Claude Code slash commands installed: /how, /bts, /why, /where (in ${cmd_dir})"
+        log_success "Claude Code plugin & skill package installed: ${skill_dir}"
     fi
     echo ""
 }
 
-# 3. Install Antigravity directly into ~/.gemini/config/skills/
+# 3. Install Antigravity (Skills, Workflows, and Plugin)
 install_antigravity() {
     if ! is_agent_selected "antigravity"; then return; fi
 
     echo -e "${BOLD}3. Installing for Antigravity (Google AGY)...${RESET}"
-    local agy_skill_dir="$HOME/.gemini/config/skills/know-it"
+    local agy_config="$HOME/.gemini/config"
 
     if [[ $DRY_RUN -eq 1 ]]; then
-        log_info "[Dry-Run] Would install self-contained skill into ${agy_skill_dir}"
+        log_info "[Dry-Run] Would install skills for /how, /bts, /why, /where, /know-it into ${agy_config}/skills"
+        log_info "[Dry-Run] Would install workflows into ${agy_config}/workflows"
     else
-        mkdir -p "$agy_skill_dir"
-        cp -r "${SRC_DIR}/skills/know-it/"* "$agy_skill_dir/"
-        mkdir -p "${agy_skill_dir}/bin"
-        cp "${SRC_DIR}/bin/know-it" "${agy_skill_dir}/bin/know-it"
-        chmod +x "${agy_skill_dir}/bin/know-it"
+        # Install skills for each slash command
+        for s in how bts why where know-it; do
+            local target_skill="${agy_config}/skills/${s}"
+            mkdir -p "${target_skill}/bin"
+            if [[ -d "${SRC_DIR}/skills/${s}" ]]; then
+                cp -r "${SRC_DIR}/skills/${s}/"* "${target_skill}/"
+            else
+                cp -r "${SRC_DIR}/skills/know-it/"* "${target_skill}/"
+            fi
+            cp "${SRC_DIR}/bin/know-it" "${target_skill}/bin/know-it"
+            chmod +x "${target_skill}/bin/know-it"
+        done
+
+        # Install workflows for direct TUI /how, /bts, /why, /where slash command execution
+        mkdir -p "${agy_config}/workflows" "${agy_config}/global_workflows"
+        for cmd in how bts why where; do
+            if [[ -f "${SRC_DIR}/commands/${cmd}.md" ]]; then
+                cp "${SRC_DIR}/commands/${cmd}.md" "${agy_config}/workflows/${cmd}.md"
+                cp "${SRC_DIR}/commands/${cmd}.md" "${agy_config}/global_workflows/${cmd}.md"
+            fi
+        done
+        if [[ -f "${SRC_DIR}/rules/know-it.md" ]]; then
+            cp "${SRC_DIR}/rules/know-it.md" "${agy_config}/workflows/know-it.md"
+            cp "${SRC_DIR}/rules/know-it.md" "${agy_config}/global_workflows/know-it.md"
+        fi
+
+        # Install plugin bundle
+        local plugin_dir="${agy_config}/plugins/know-it"
+        mkdir -p "${plugin_dir}/skills" "${plugin_dir}/rules"
+        cat <<'EOF' > "${plugin_dir}/plugin.json"
+{
+  "name": "know-it",
+  "description": "Universal GitHub repository comprehension and architecture engine"
+}
+EOF
+        cp -r "${SRC_DIR}/skills/"* "${plugin_dir}/skills/" 2>/dev/null || true
+        cp "${SRC_DIR}/rules/know-it.md" "${plugin_dir}/rules/AGENTS.md"
+
         rm -rf "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
-        log_success "Antigravity skill installed: ${agy_skill_dir}/SKILL.md"
+        log_success "Antigravity slash commands registered: /how, /bts, /why, /where, /know-it"
+        log_success "Antigravity skills & workflows installed: ${agy_config}"
     fi
     echo ""
 }
