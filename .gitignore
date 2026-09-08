@@ -1,0 +1,6 @@
+.cache/
+.know-how/
+*.tmp
+__pycache__/
+*.pyc
+.DS_Store
