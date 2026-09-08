@@ -504,4 +504,4 @@ echo -e "  * ${CYAN}/bts <github-repo-link>${RESET}  -> Behind-The-Scenes system
 echo -e "  * ${CYAN}/why <github-repo-link>${RESET}  -> Real-world use cases & personal aims"
 echo -e "  * ${CYAN}/where <github-repo-link>${RESET}-> Codebase map, entry points & data flow"
 echo ""
-echo -e "Example: ${BOLD}/how ettercap/ettercap${RESET}"
+echo -e "Example: ${BOLD}/how torvalds/linux${RESET}"
