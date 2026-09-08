@@ -29,7 +29,25 @@ cd know-it
 ./install.sh
 ```
 
-The installer auto-detects installed AI agents and instantly registers the slash commands and skill packages.
+The installer scans for available agents, presents an interactive numbered selection (e.g. `1. Claude Code`, `2. Antigravity`, ..., `N. All [Recommended]`), and lets you choose between `1. Latest Release [Recommended]` or `2. Main branch (main)`.
+
+---
+
+## The One-Liner Update
+
+Update existing `know-it` installations across your agents at any time with a single command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Chintanpatel24/know-it/main/update.sh | bash
+```
+
+Or directly via the CLI:
+
+```bash
+know-it update
+```
+
+The updater scans for existing `know-it` installations, displays an interactive numbered list of environments to update, and allows choosing between `1. Latest Release [Recommended]` and `2. Main branch (main)`.
 
 ---
 
