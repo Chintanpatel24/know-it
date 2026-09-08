@@ -1,8 +1,11 @@
+<div align=center>
+  
 # know-it
 
-> **Universal Agent Skill & Slash Command Suite for Deep GitHub Repository Comprehension**
->
-> Learn any codebase at any depth -- from intuitive mental models to low-level systems logic, raw socket mechanics, and architecture blueprints.
+</div>
+
+>- **Universal Agent Skill & Slash Command Suite for Deep GitHub Repository Comprehension**
+>- Learn any codebase at any depth -- from intuitive mental models to low-level systems logic, raw socket mechanics, and architecture blueprints.
 
 [![Agent Skills](https://img.shields.io/badge/standard-AgentSkills-purple.svg)](#supported-agents)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Supported-orange.svg)](#supported-agents)
