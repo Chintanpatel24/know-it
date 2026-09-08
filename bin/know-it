@@ -269,6 +269,21 @@ cmd_clean() {
     fi
 }
 
+cmd_update() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd || echo "")"
+    local local_update="${script_dir}/update.sh"
+    local share_update="$HOME/.local/share/know-it/update.sh"
+
+    if [[ -f "$local_update" ]]; then
+        exec "$local_update" "$@"
+    elif [[ -f "$share_update" ]]; then
+        exec "$share_update" "$@"
+    else
+        bash -c "$(curl -fsSL https://raw.githubusercontent.com/Chintanpatel24/know-it/main/update.sh)" -- "$@"
+    fi
+}
+
 cmd_info() {
     echo -e "${BOLD}know-it v${VERSION} - Agent Skill Integration Status${RESET}"
     echo ""
@@ -306,6 +321,7 @@ Usage:
   know-it inspect <slug> <file-path>       View file contents from cached repo with line numbers
   know-it list                             List all repositories currently in local cache
   know-it clean [slug|--all]               Remove repository or entire cache
+  know-it update [OPTIONS]                 Scan existing know-it presence and update agent skills
   know-it info                             Show installed agent skills and status
   know-it version                          Print version
   know-it help                             Show this help message
@@ -314,6 +330,7 @@ Examples:
   know-it fetch ettercap/ettercap
   know-it tree ettercap/ettercap 2
   know-it inspect ettercap/ettercap src/ec_main.c
+  know-it update
 EOF
 }
 
@@ -336,6 +353,10 @@ case "${1:-help}" in
     clean)
         shift
         cmd_clean "$@"
+        ;;
+    update)
+        shift
+        cmd_update "$@"
         ;;
     info)
         cmd_info

@@ -38,7 +38,13 @@ assert_success "CLI help command" "${SCRIPT_DIR}/bin/know-it" help
 assert_success "CLI version command" "${SCRIPT_DIR}/bin/know-it" version
 
 # Test 4: Installer dry-run
-assert_success "Installer dry-run" "${SCRIPT_DIR}/install.sh" --dry-run
+assert_success "Installer dry-run" "${SCRIPT_DIR}/install.sh" --dry-run --all
+
+# Test 4b: Updater exists and runs dry-run
+assert_success "Updater executable check" test -x "${SCRIPT_DIR}/update.sh"
+assert_success "Updater help command" "${SCRIPT_DIR}/update.sh" --help
+assert_success "Updater dry-run" "${SCRIPT_DIR}/update.sh" --dry-run --all
+assert_success "CLI update subcommand" "${SCRIPT_DIR}/bin/know-it" update --dry-run --all
 
 # Test 5: Templates exist
 assert_success "Template OVERVIEW.md exists" test -f "${SCRIPT_DIR}/templates/OVERVIEW.md"
