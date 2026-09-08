@@ -4,7 +4,7 @@ When the user triggers `/how <repo>` or asks "how does <repo> work?", perform th
 
 ---
 
-## The 3-Question Triage Flow
+## The 4-Question Triage Flow
 
 ### Question 1: Knowledge Depth
 Ask: **"What level of depth are you looking for?"**
@@ -24,11 +24,17 @@ Ask: **"Where would you like to receive the analysis?"**
 - **Option 1 (Dossier + Chat Summary)**: Generate clean Markdown files in `.know-it/<repo-name>/` (e.g., `OVERVIEW.md`, `BTS.md`) and display an executive visual summary in chat.
 - **Option 2 (Interactive Chat Walkthrough)**: Walk through the concepts directly in our chat conversation first without saving files yet.
 
+### Question 4: Visual Diagram Style
+Ask: **"What diagram style do you prefer?"**
+- **Option 1 (Clean Mermaid Diagram [Recommended])**: Modern rendered flowcharts and sequence diagrams (5-8 nodes max, functional subgraphs, numbered action steps, and reading legend).
+- **Option 2 (Structured ASCII Box-Art)**: Universal terminal-friendly boxed diagrams inside fenced code blocks that render reliably anywhere.
+- **Option 3 (Text-Only / No Diagrams)**: Deep narrative technical breakdown without diagrams.
+
 ---
 
 ## Skipping the Triage
 
 When the user uses dedicated shortcut commands:
-- `/bts <repo>`: Automatically select **Deep Code & Systems Logic** + **Code Autopsy / Security Mechanics** + generate `.know-it/<repo>/BTS.md`. Do not ask triage questions; start fetching and analyzing immediately.
-- `/why <repo>`: Automatically select **Mental Model & Personal Aims** + generate `.know-it/<repo>/USE_CASES.md`.
-- `/where <repo>`: Automatically select **Architecture & Systems Design** + generate `.know-it/<repo>/ARCHITECTURE.md`.
+- `/bts <repo>`: Automatically select **Deep Code & Systems Logic** + **Code Autopsy / Security Mechanics** + generate `.know-it/<repo>/BTS.md`. Default to Clean Mermaid diagram (or Structured ASCII if `--ascii` flag is passed).
+- `/why <repo>`: Automatically select **Mental Model & Personal Aims** + generate `.know-it/<repo>/USE_CASES.md`. Default to Clean Mermaid diagram (or Structured ASCII if `--ascii` flag is passed).
+- `/where <repo>`: Automatically select **Architecture & Systems Design** + generate `.know-it/<repo>/ARCHITECTURE.md`. Default to Clean Mermaid diagram (or Structured ASCII if `--ascii` flag is passed).

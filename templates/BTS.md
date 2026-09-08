@@ -4,53 +4,66 @@
 
 ---
 
-## 1. Under-The-Hood Architecture: How it Actually Works
+## 1. Under-The-Hood Architecture: The Core Mechanism
 <!-- Deep dive into what actually occurs at the OS, Kernel, Network, or Memory level -->
 {{UNDER_THE_HOOD_EXPLANATION}}
 
-```mermaid
-{{SYSTEM_INTERNALS_MERMAID_DIAGRAM}}
-```
+---
 
-## 2. Why This Language and These Libraries?
-| Decision / Technology | Why It Was Chosen | Trade-offs & Consequences |
+## 2. Visual Execution Flow
+<!-- Visual diagram: Clean Mermaid (5-8 nodes max with subgraphs and numbered action edges) OR Structured ASCII Box-Art -->
+{{DIAGRAM_BLOCK}}
+
+> **How to Read This Flow**: {{DIAGRAM_EXPLANATION}}
+
+---
+
+## 3. Why This Language and These Libraries?
+<!-- Architectural trade-offs and rejected alternatives -->
+| Decision / Technology | Why It Was Chosen | Trade-offs & Rejected Alternatives |
 | :--- | :--- | :--- |
 | **Language: {{PRIMARY_LANGUAGE}}** | {{LANG_REASONING}} | {{LANG_TRADEOFFS}} |
 | **Core Dependency: {{CORE_LIB_1}}** | {{LIB_1_REASONING}} | {{LIB_1_TRADEOFFS}} |
 | **Core Dependency: {{CORE_LIB_2}}** | {{LIB_2_REASONING}} | {{LIB_2_TRADEOFFS}} |
 
-## 3. The Core Engine Loop & Execution Flow
-<!-- Detailed breakdown of the main loop, state machine, or thread execution model -->
-{{EXECUTION_FLOW_DESCRIPTION}}
+---
 
-```mermaid
-sequenceDiagram
-    autonumber
-    {{EXECUTION_SEQUENCE_MERMAID}}
-```
+## 4. Concrete End-to-End Trace
+<!-- Trace a single concrete artifact (e.g. 1 network packet, 1 HTTP request, 1 byte chunk) from entry to exit -->
+{{END_TO_END_TRACE_DESCRIPTION}}
 
-## 4. Code Autopsy: Annotated Critical Snippets
-### Snippet 1: The Magic Function (`{{CRITICAL_FUNCTION_1_NAME}}`)
-*Location*: `{{FILE_PATH_1}}#L{{LINE_START}}-L{{LINE_END}}`
+1. **Ingress / Initiation**: {{TRACE_STEP_1}}
+2. **Kernel / System Boundary**: {{TRACE_STEP_2}}
+3. **Core Engine Processing**: {{TRACE_STEP_3}}
+4. **State Transition / Mutation**: {{TRACE_STEP_4}}
+5. **Egress / Delivery**: {{TRACE_STEP_5}}
 
-```{{LANG_LOWERCASE}}
-{{ANNOTATED_CODE_SNIPPET_1}}
-```
-**Line-by-line mechanics:**
-- `{{EXPLANATION_STEP_1}}`
-- `{{EXPLANATION_STEP_2}}`
-- `{{EXPLANATION_STEP_3}}`
+---
 
-### Snippet 2: Memory / Protocol / Concurrency Handling (`{{CRITICAL_FUNCTION_2_NAME}}`)
-*Location*: `{{FILE_PATH_2}}`
+## 5. The Secret Sauce: Surgical Code Autopsy
+<!-- Surgical inspection of the most critical 20-50 lines where the cleverest algorithmic or low-level logic executes -->
+### The Critical Core (`{{CRITICAL_FUNCTION_NAME}}`)
+*Location*: `{{FILE_PATH}}#L{{LINE_START}}-L{{LINE_END}}`
 
 ```{{LANG_LOWERCASE}}
-{{ANNOTATED_CODE_SNIPPET_2}}
+{{ANNOTATED_CODE_SNIPPET}}
 ```
-**Why this matters:**
-{{SNIPPET_2_INSIGHT}}
 
-## 5. Performance, Concurrency & Low-Level Tricks
-- **Memory Management**: {{MEMORY_STRATEGY}}
-- **Concurrency & Threading Model**: {{CONCURRENCY_MODEL}}
-- **System Calls & Kernel Interfaces**: {{SYSCALLS_USED}} (e.g. `epoll`, `pcap_dispatch`, `ioctl`, `mmap`)
+**Line-by-line machine commentary:**
+- `Lines {{LINE_1}}-{{LINE_2}}`: {{EXPLANATION_STEP_1}}
+- `Lines {{LINE_3}}-{{LINE_4}}`: {{EXPLANATION_STEP_2}}
+- `Lines {{LINE_5}}-{{LINE_6}}`: {{EXPLANATION_STEP_3}}
+
+---
+
+## 6. Systems Mechanics: Kernel, Sockets & Memory
+- **Memory Allocation Strategy**: {{MEMORY_STRATEGY}} (e.g. ring buffers, zero-copy `mmap`, pool allocators)
+- **Concurrency Model**: {{CONCURRENCY_MODEL}} (e.g. event loop, worker threads, thread per connection)
+- **System Calls & Kernel Primitives**: {{SYSCALLS_USED}} (e.g. `epoll_wait`, `ioctl`, `AF_PACKET`, `sendmsg`)
+
+---
+
+## 7. Masterclass Takeaways: Lessons For Your Own Software
+<!-- Actionable engineering patterns to take away and use in your own projects -->
+- **Pattern 1**: {{TAKEAWAY_1}}
+- **Pattern 2**: {{TAKEAWAY_2}}
