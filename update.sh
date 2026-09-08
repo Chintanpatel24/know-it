@@ -18,9 +18,9 @@ CYAN="\033[36m"
 RED="\033[31m"
 RESET="\033[0m"
 
-log_info()    { echo -e "  ${BLUE}[INFO]${RESET} $*"; }
-log_success() { echo -e "  ${GREEN}[OK]${RESET} $*"; }
-log_warn()    { echo -e "  ${YELLOW}[WARN]${RESET} $*"; }
+log_info()    { echo -e "  ${BLUE}[INFO]${RESET} $*" >&2; }
+log_success() { echo -e "  ${GREEN}[OK]${RESET} $*" >&2; }
+log_warn()    { echo -e "  ${YELLOW}[WARN]${RESET} $*" >&2; }
 log_error()   { echo -e "  ${RED}[ERROR]${RESET} $*" >&2; }
 
 print_banner() {
@@ -110,6 +110,8 @@ EOF
 done
 
 print_banner
+
+SRC_DIR=""
 
 # Scan for existing know-it installations
 INSTALLED_AGENTS=()
@@ -226,11 +228,11 @@ detect_and_sync_source() {
 
     # If running locally from repo
     if [[ -n "$script_dir" && -d "${script_dir}/skills/know-it" && -d "${script_dir}/commands" ]]; then
-        echo "$script_dir"
-        return
+        SRC_DIR="$script_dir"
+        return 0
     fi
 
-    echo -e "${BLUE}==> Fetching latest know-it updates into ${LOCAL_SHARE_DIR}...${RESET}"
+    echo -e "${BLUE}==> Fetching latest know-it updates into ${LOCAL_SHARE_DIR}...${RESET}" >&2
     mkdir -p "$(dirname "$LOCAL_SHARE_DIR")"
     if [[ -d "${LOCAL_SHARE_DIR}/.git" ]]; then
         git -C "$LOCAL_SHARE_DIR" fetch --tags --quiet origin 2>/dev/null || true
@@ -238,12 +240,16 @@ detect_and_sync_source() {
         rm -rf "$LOCAL_SHARE_DIR"
         git clone --quiet "$REPO_URL" "$LOCAL_SHARE_DIR" 2>/dev/null || {
             if [[ -d "./skills/know-it" ]]; then
-                echo "$(pwd)"
-                return
+                SRC_DIR="$(pwd)"
+                return 0
             fi
             log_error "Failed to clone repository from $REPO_URL"
             exit 1
         }
+    fi
+
+    if [[ ! -d "${LOCAL_SHARE_DIR}/skills/know-it" ]]; then
+        git -C "$LOCAL_SHARE_DIR" checkout --quiet feature/know-it-suite 2>/dev/null || true
     fi
 
     if [[ "$selected_channel" == "release" ]]; then
@@ -263,10 +269,14 @@ detect_and_sync_source() {
         git -C "$LOCAL_SHARE_DIR" pull --quiet origin main 2>/dev/null || true
     fi
 
-    echo "$LOCAL_SHARE_DIR"
+    if [[ ! -d "${LOCAL_SHARE_DIR}/skills/know-it" ]]; then
+        git -C "$LOCAL_SHARE_DIR" checkout --quiet feature/know-it-suite 2>/dev/null || true
+    fi
+
+    SRC_DIR="$LOCAL_SHARE_DIR"
 }
 
-SRC_DIR=$(detect_and_sync_source "$CHANNEL")
+detect_and_sync_source "$CHANNEL"
 log_info "Source repository: ${SRC_DIR}"
 echo ""
 
@@ -313,8 +323,11 @@ update_claude() {
         mkdir -p "$cmd_dir" "$skill_dir"
         cp "${SRC_DIR}/commands/"*.md "$cmd_dir/"
         cp -r "${SRC_DIR}/skills/know-it/"* "$skill_dir/"
+        mkdir -p "${skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${skill_dir}/bin/know-it"
+        chmod +x "${skill_dir}/bin/know-it"
         rm -rf "$HOME/.claude/skills/know-how" 2>/dev/null || true
-        log_success "Claude Code slash commands and skill updated."
+        log_success "Claude Code slash commands and self-contained skill updated."
     fi
     echo ""
 }
@@ -331,8 +344,11 @@ update_antigravity() {
     else
         mkdir -p "$agy_skill_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$agy_skill_dir/"
+        mkdir -p "${agy_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${agy_skill_dir}/bin/know-it"
+        chmod +x "${agy_skill_dir}/bin/know-it"
         rm -rf "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
-        log_success "Antigravity skill updated: ${agy_skill_dir}/SKILL.md"
+        log_success "Antigravity self-contained skill updated: ${agy_skill_dir}/SKILL.md"
     fi
     echo ""
 }
@@ -352,8 +368,11 @@ update_opencode() {
         mkdir -p "$oc_cmd_dir" "$oc_skill_dir"
         cp "${SRC_DIR}/commands/"*.md "$oc_cmd_dir/"
         cp -r "${SRC_DIR}/skills/know-it/"* "$oc_skill_dir/"
+        mkdir -p "${oc_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${oc_skill_dir}/bin/know-it"
+        chmod +x "${oc_skill_dir}/bin/know-it"
         rm -rf "$HOME/.config/opencode/skills/know-how" 2>/dev/null || true
-        log_success "OpenCode commands and skill updated."
+        log_success "OpenCode commands and self-contained skill updated."
     fi
     echo ""
 }
@@ -370,8 +389,11 @@ update_codex() {
     else
         mkdir -p "$codex_skill_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$codex_skill_dir/"
+        mkdir -p "${codex_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${codex_skill_dir}/bin/know-it"
+        chmod +x "${codex_skill_dir}/bin/know-it"
         rm -rf "$HOME/.codex/skills/know-how" 2>/dev/null || true
-        log_success "Codex skill updated: ${codex_skill_dir}"
+        log_success "Codex self-contained skill updated: ${codex_skill_dir}"
     fi
     echo ""
 }
@@ -388,6 +410,9 @@ update_agentskills() {
     else
         mkdir -p "$universal_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$universal_dir/"
+        mkdir -p "${universal_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${universal_dir}/bin/know-it"
+        chmod +x "${universal_dir}/bin/know-it"
         rm -rf "$HOME/.agentskills/know-how" 2>/dev/null || true
         log_success "Universal AgentSkills updated: ${universal_dir}"
     fi

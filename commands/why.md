@@ -11,7 +11,23 @@ Target repository: `$ARGUMENTS`
    - If `$ARGUMENTS` is empty, ask the user: "Which GitHub repository would you like to evaluate? (e.g. `ettercap/ettercap`)".
 
 2. **Ingest & Inspect Context**:
-   - Run `know-it fetch "$ARGUMENTS"` to ensure the repo is cached.
+   - Locate the `know-it` CLI tool:
+     ```bash
+     KNOW_IT="know-it"
+     if ! command -v know-it &>/dev/null; then
+         for p in "$HOME/.local/bin/know-it" \
+                  "$HOME/.gemini/config/skills/know-it/bin/know-it" \
+                  "$HOME/.claude/skills/know-it/bin/know-it" \
+                  "$HOME/.config/opencode/skills/know-it/bin/know-it" \
+                  "$HOME/.codex/skills/know-it/bin/know-it"; do
+             if [[ -x "$p" ]]; then
+                 KNOW_IT="$p"
+                 break
+             fi
+         done
+     fi
+     ```
+   - Run `$KNOW_IT fetch "$ARGUMENTS"` to ensure the repo is cached.
    - Read the `README.md`, documentation, and configuration files to understand intent and ecosystem positioning.
 
 3. **Formulate High-Value Practical Assessment**:

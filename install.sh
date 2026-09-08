@@ -18,9 +18,9 @@ CYAN="\033[36m"
 RED="\033[31m"
 RESET="\033[0m"
 
-log_info()    { echo -e "  ${BLUE}[INFO]${RESET} $*"; }
-log_success() { echo -e "  ${GREEN}[OK]${RESET} $*"; }
-log_warn()    { echo -e "  ${YELLOW}[WARN]${RESET} $*"; }
+log_info()    { echo -e "  ${BLUE}[INFO]${RESET} $*" >&2; }
+log_success() { echo -e "  ${GREEN}[OK]${RESET} $*" >&2; }
+log_warn()    { echo -e "  ${YELLOW}[WARN]${RESET} $*" >&2; }
 log_error()   { echo -e "  ${RED}[ERROR]${RESET} $*" >&2; }
 
 print_banner() {
@@ -112,6 +112,8 @@ done
 
 print_banner
 
+SRC_DIR=""
+
 # Determine source directory (local repo vs remote fetch)
 detect_and_sync_source() {
     local selected_channel="$1"
@@ -120,12 +122,12 @@ detect_and_sync_source() {
 
     # If running locally from repo
     if [[ -n "$script_dir" && -d "${script_dir}/skills/know-it" && -d "${script_dir}/commands" ]]; then
-        echo "$script_dir"
-        return
+        SRC_DIR="$script_dir"
+        return 0
     fi
 
     # Running via pipe (curl | bash)
-    echo -e "${BLUE}==> Preparing know-it source repository in ${LOCAL_SHARE_DIR}...${RESET}"
+    echo -e "${BLUE}==> Preparing know-it repository in ${LOCAL_SHARE_DIR}...${RESET}" >&2
     mkdir -p "$(dirname "$LOCAL_SHARE_DIR")"
     if [[ -d "${LOCAL_SHARE_DIR}/.git" ]]; then
         git -C "$LOCAL_SHARE_DIR" fetch --tags --quiet origin 2>/dev/null || true
@@ -133,12 +135,17 @@ detect_and_sync_source() {
         rm -rf "$LOCAL_SHARE_DIR"
         git clone --quiet "$REPO_URL" "$LOCAL_SHARE_DIR" 2>/dev/null || {
             if [[ -d "./skills/know-it" ]]; then
-                echo "$(pwd)"
-                return
+                SRC_DIR="$(pwd)"
+                return 0
             fi
             log_error "Failed to clone repository from $REPO_URL"
             exit 1
         }
+    fi
+
+    # If skills/know-it not on default branch yet (pre-PR merge), fallback to feature branch
+    if [[ ! -d "${LOCAL_SHARE_DIR}/skills/know-it" ]]; then
+        git -C "$LOCAL_SHARE_DIR" checkout --quiet feature/know-it-suite 2>/dev/null || true
     fi
 
     if [[ "$selected_channel" == "release" ]]; then
@@ -158,7 +165,11 @@ detect_and_sync_source() {
         git -C "$LOCAL_SHARE_DIR" pull --quiet origin main 2>/dev/null || true
     fi
 
-    echo "$LOCAL_SHARE_DIR"
+    if [[ ! -d "${LOCAL_SHARE_DIR}/skills/know-it" ]]; then
+        git -C "$LOCAL_SHARE_DIR" checkout --quiet feature/know-it-suite 2>/dev/null || true
+    fi
+
+    SRC_DIR="$LOCAL_SHARE_DIR"
 }
 
 # Scan available agents on the host system
@@ -196,7 +207,6 @@ scan_agents() {
         AVAILABLE_LABELS+=("Windsurf Rules (~/.windsurf)")
     fi
 
-    # Universal AgentSkills standard is always supported
     AVAILABLE_AGENTS+=("agentskills")
     AVAILABLE_LABELS+=("Universal AgentSkills Standard (~/.agentskills)")
 }
@@ -246,7 +256,6 @@ if [[ $NON_INTERACTIVE -eq 0 ]]; then
     fi
     echo ""
 else
-    # Non-interactive mode
     if [[ -z "$TARGET_AGENT" || "$TARGET_AGENT" == "all" ]]; then
         SELECTED_AGENTS=("${AVAILABLE_AGENTS[@]}")
     else
@@ -254,7 +263,7 @@ else
     fi
 fi
 
-SRC_DIR=$(detect_and_sync_source "$CHANNEL")
+detect_and_sync_source "$CHANNEL"
 log_info "Source repository: ${SRC_DIR}"
 echo ""
 
@@ -292,7 +301,7 @@ install_cli_helper() {
     echo ""
 }
 
-# 2. Install Claude Code
+# 2. Install Claude Code directly into ~/.claude/
 install_claude() {
     if ! is_agent_selected "claude"; then return; fi
 
@@ -302,19 +311,23 @@ install_claude() {
 
     if [[ $DRY_RUN -eq 1 ]]; then
         log_info "[Dry-Run] Would install slash commands into ${cmd_dir}"
-        log_info "[Dry-Run] Would install skill into ${skill_dir}"
+        log_info "[Dry-Run] Would install self-contained skill into ${skill_dir}"
     else
         mkdir -p "$cmd_dir" "$skill_dir"
         cp "${SRC_DIR}/commands/"*.md "$cmd_dir/"
         cp -r "${SRC_DIR}/skills/know-it/"* "$skill_dir/"
+        # Ensure bin/know-it is inside the skill directory for self-containment
+        mkdir -p "${skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${skill_dir}/bin/know-it"
+        chmod +x "${skill_dir}/bin/know-it"
         rm -rf "$HOME/.claude/skills/know-how" 2>/dev/null || true
         log_success "Slash commands installed: /how, /bts, /why, /where (in ${cmd_dir})"
-        log_success "Skill package installed: ${skill_dir}"
+        log_success "Self-contained skill installed: ${skill_dir}"
     fi
     echo ""
 }
 
-# 3. Install Antigravity
+# 3. Install Antigravity directly into ~/.gemini/config/skills/
 install_antigravity() {
     if ! is_agent_selected "antigravity"; then return; fi
 
@@ -322,17 +335,20 @@ install_antigravity() {
     local agy_skill_dir="$HOME/.gemini/config/skills/know-it"
 
     if [[ $DRY_RUN -eq 1 ]]; then
-        log_info "[Dry-Run] Would install skill into ${agy_skill_dir}"
+        log_info "[Dry-Run] Would install self-contained skill into ${agy_skill_dir}"
     else
         mkdir -p "$agy_skill_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$agy_skill_dir/"
+        mkdir -p "${agy_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${agy_skill_dir}/bin/know-it"
+        chmod +x "${agy_skill_dir}/bin/know-it"
         rm -rf "$HOME/.gemini/config/skills/know-how" 2>/dev/null || true
         log_success "Antigravity skill installed: ${agy_skill_dir}/SKILL.md"
     fi
     echo ""
 }
 
-# 4. Install OpenCode
+# 4. Install OpenCode directly into ~/.config/opencode/
 install_opencode() {
     if ! is_agent_selected "opencode"; then return; fi
 
@@ -347,6 +363,9 @@ install_opencode() {
         mkdir -p "$oc_cmd_dir" "$oc_skill_dir"
         cp "${SRC_DIR}/commands/"*.md "$oc_cmd_dir/"
         cp -r "${SRC_DIR}/skills/know-it/"* "$oc_skill_dir/"
+        mkdir -p "${oc_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${oc_skill_dir}/bin/know-it"
+        chmod +x "${oc_skill_dir}/bin/know-it"
         rm -rf "$HOME/.config/opencode/skills/know-how" 2>/dev/null || true
         log_success "OpenCode slash commands installed: ${oc_cmd_dir}"
         log_success "OpenCode skill installed: ${oc_skill_dir}"
@@ -354,7 +373,7 @@ install_opencode() {
     echo ""
 }
 
-# 5. Install Codex CLI
+# 5. Install Codex CLI directly into ~/.codex/skills/
 install_codex() {
     if ! is_agent_selected "codex"; then return; fi
 
@@ -366,13 +385,16 @@ install_codex() {
     else
         mkdir -p "$codex_skill_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$codex_skill_dir/"
+        mkdir -p "${codex_skill_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${codex_skill_dir}/bin/know-it"
+        chmod +x "${codex_skill_dir}/bin/know-it"
         rm -rf "$HOME/.codex/skills/know-how" 2>/dev/null || true
         log_success "Codex skill installed: ${codex_skill_dir}"
     fi
     echo ""
 }
 
-# 6. Install Universal AgentSkills Standard
+# 6. Install Universal AgentSkills Standard directly into ~/.agentskills/
 install_universal_agentskills() {
     if ! is_agent_selected "agentskills"; then return; fi
 
@@ -384,6 +406,9 @@ install_universal_agentskills() {
     else
         mkdir -p "$universal_dir"
         cp -r "${SRC_DIR}/skills/know-it/"* "$universal_dir/"
+        mkdir -p "${universal_dir}/bin"
+        cp "${SRC_DIR}/bin/know-it" "${universal_dir}/bin/know-it"
+        chmod +x "${universal_dir}/bin/know-it"
         rm -rf "$HOME/.agentskills/know-how" 2>/dev/null || true
         log_success "Universal AgentSkills installed: ${universal_dir}"
     fi
@@ -430,7 +455,8 @@ install_universal_agentskills
 install_ide_rules
 
 echo -e "${GREEN}${BOLD}Installation Complete!${RESET}\n"
-echo -e "You can now use ${BOLD}know-it${RESET} in your AI agents:"
+echo -e "know-it is permanently installed into your agent configuration directories."
+echo -e "You can now use know-it in your AI agents:"
 echo -e "  * ${CYAN}/how <github-repo-link>${RESET}  -> Interactive triage & project overview"
 echo -e "  * ${CYAN}/bts <github-repo-link>${RESET}  -> Behind-The-Scenes systems & code logic"
 echo -e "  * ${CYAN}/why <github-repo-link>${RESET}  -> Real-world use cases & personal aims"

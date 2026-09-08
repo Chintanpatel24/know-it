@@ -11,8 +11,24 @@ Target repository: `$ARGUMENTS`
    - If `$ARGUMENTS` is empty, ask the user: "Which GitHub repository would you like to analyze? (e.g. `ettercap/ettercap` or full GitHub URL)".
    - If provided, normalize the slug (e.g. `owner/repo`).
 
-2. **Ingest Repository**:
-   - Run `know-it fetch "$ARGUMENTS"` (or run `git clone --depth 1 https://github.com/$ARGUMENTS.git ~/.cache/know-it/$ARGUMENTS` if `know-it` is not found).
+2. **Locate & Ingest Repository**:
+   - Locate the `know-it` CLI tool:
+     ```bash
+     KNOW_IT="know-it"
+     if ! command -v know-it &>/dev/null; then
+         for p in "$HOME/.local/bin/know-it" \
+                  "$HOME/.gemini/config/skills/know-it/bin/know-it" \
+                  "$HOME/.claude/skills/know-it/bin/know-it" \
+                  "$HOME/.config/opencode/skills/know-it/bin/know-it" \
+                  "$HOME/.codex/skills/know-it/bin/know-it"; do
+             if [[ -x "$p" ]]; then
+                 KNOW_IT="$p"
+                 break
+             fi
+         done
+     fi
+     ```
+   - Run `$KNOW_IT fetch "$ARGUMENTS"` (or run `git clone --depth 1 https://github.com/$ARGUMENTS.git ~/.cache/know-it/$ARGUMENTS` if `know-it` is not executable).
    - Read the summary output (languages, entry points, doc files).
 
 3. **Interactive Triage (Ask the User)**:

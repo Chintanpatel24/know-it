@@ -11,8 +11,24 @@ Target repository: `$ARGUMENTS`
    - If `$ARGUMENTS` is empty, ask the user: "Which GitHub repository would you like to navigate? (e.g. `ettercap/ettercap`)".
 
 2. **Map Code Structure**:
-   - Run `know-it fetch "$ARGUMENTS"` to ensure the repo is cached.
-   - Run `know-it tree "$ARGUMENTS" 2` to capture the top-level directory layout.
+   - Locate the `know-it` CLI tool:
+     ```bash
+     KNOW_IT="know-it"
+     if ! command -v know-it &>/dev/null; then
+         for p in "$HOME/.local/bin/know-it" \
+                  "$HOME/.gemini/config/skills/know-it/bin/know-it" \
+                  "$HOME/.claude/skills/know-it/bin/know-it" \
+                  "$HOME/.config/opencode/skills/know-it/bin/know-it" \
+                  "$HOME/.codex/skills/know-it/bin/know-it"; do
+             if [[ -x "$p" ]]; then
+                 KNOW_IT="$p"
+                 break
+             fi
+         done
+     fi
+     ```
+   - Run `$KNOW_IT fetch "$ARGUMENTS"` to ensure the repo is cached.
+   - Run `$KNOW_IT tree "$ARGUMENTS" 2` to capture the top-level directory layout.
    - Locate main entry points, build files (`CMakeLists.txt`, `Makefile`, `Cargo.toml`, etc.), and core module folders.
 
 3. **Construct Codebase Map**:
